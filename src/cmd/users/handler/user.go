@@ -24,6 +24,11 @@ func StoreUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err = user.PrepareUser(); err != nil {
+		responses.DomainError(w, http.StatusBadRequest, err)
+		return
+	}
+
 	db, err := config.Connect()
 	if err != nil {
 		responses.DomainError(w, http.StatusInternalServerError, err)
