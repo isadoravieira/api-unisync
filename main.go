@@ -11,10 +11,9 @@ import (
 
 func main() {
 	config.Load()
-	fmt.Println(config.ConectionDB)
-	fmt.Println("aqui sera onde inicializa a api")
 
 	r := router.Generate()
 
-	log.Fatal(http.ListenAndServe(":8080", r))
+	fmt.Printf("Listening at the door: %d", config.Port)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", config.Port), r))
 }
