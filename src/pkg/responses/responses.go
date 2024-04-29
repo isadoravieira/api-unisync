@@ -8,6 +8,8 @@ import (
 
 // DomainJSON returns a JSON response to request
 func DomainJSON(w http.ResponseWriter, statusCode int, datas interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	
 	w.WriteHeader(statusCode)
 
 	if err := json.NewEncoder(w).Encode(datas); err != nil {

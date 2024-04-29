@@ -44,3 +44,38 @@ func (u User) Create(user entity.User) (entity.User, error) {
 		CreatedAt: user.CreatedAt,
 	}, nil
 }
+
+func (u User) ListUsers(searchValue string) ([]entity.User, error) {
+
+	// searchValue = fmt.Sprintf("%%%s%%") // returns %searchValue%
+
+	rows, err := u.db.Query(
+		"SELECT id, name, username, email, createdAr FROM users WHERE name LIKE ? OR username LIKE ?",
+		"%"+searchValue+"%", "%"+searchValue+"%",
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var users []entity.User
+
+	for rows.Next() {
+		var user entity.User
+
+		if err = rows.Scan(
+			&user.ID,
+			&user.Name,
+			&user.UserName,
+			&user.Email,
+			&user.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+
+		users = append(users, user)
+	}
+
+	return users, nil
+}

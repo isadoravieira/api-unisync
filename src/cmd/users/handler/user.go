@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"github.com/isadoravieira/api-unisync/src/config"
 	"github.com/isadoravieira/api-unisync/src/internal/domain/entity"
@@ -48,7 +49,24 @@ func StoreUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func IndexUser(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("List user"))
+	searchValue := strings.ToLower(r.URL.Query().Get("user"))
+
+	db, err := config.Connect()
+	if err != nil {
+		responses.DomainError(w, http.StatusInternalServerError, err)
+		return
+	}
+	defer db.Close()
+
+	userRepo := repository.NewUserRepository(db)
+
+	users, err := userRepo.ListUsers(searchValue)
+	if err != nil {
+		responses.DomainError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	responses.DomainJSON(w, http.StatusOK, users)
 }
 
 func ShowUser(w http.ResponseWriter, r *http.Request) {
