@@ -79,3 +79,30 @@ func (u User) ListUsers(searchValue string) ([]entity.User, error) {
 
 	return users, nil
 }
+
+func (u User) QueryByID(ID uint64) (entity.User, error) {
+	rows, err := u.db.Query(
+		"SELECT id, name, username, email, createdAr FROM users WHERE id = ?",
+		ID,
+	)
+	if err != nil {
+		return entity.User{}, err
+	}
+	defer rows.Close()
+
+	var user entity.User
+
+	if rows.Next() {
+		if err = rows.Scan(
+			&user.ID,
+			&user.Name,
+			&user.UserName,
+			&user.Email,
+			&user.CreatedAt,
+		); err !=  nil {
+			return entity.User{}, err
+		}
+	}
+
+	return user, nil
+}
