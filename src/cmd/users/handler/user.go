@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"strings"
 
+	"github.com/gorilla/mux"
 	"github.com/isadoravieira/api-unisync/src/config"
 	"github.com/isadoravieira/api-unisync/src/internal/domain/entity"
 	"github.com/isadoravieira/api-unisync/src/internal/infraestructure/repository"
@@ -70,7 +72,30 @@ func IndexUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func ShowUser(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Query user by ID"))
+	params := mux.Vars(r)
+
+	userID, err := strconv.ParseUint(params["userID"], 10, 64)
+	if err != nil {
+		responses.DomainError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	db, err := config.Connect()
+	if err != nil {
+		responses.DomainError(w, http.StatusInternalServerError, err)
+		return
+	}
+	defer db.Close()
+
+	userRepo := repository.NewUserRepository(db)
+
+	user, err := userRepo.QueryByID(userID)
+	if err != nil {
+		responses.DomainError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	responses.DomainJSON(w, http.StatusOK, user)
 }
 
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
