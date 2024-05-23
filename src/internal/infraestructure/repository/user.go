@@ -99,10 +99,42 @@ func (u User) QueryByID(ID uint64) (entity.User, error) {
 			&user.UserName,
 			&user.Email,
 			&user.CreatedAt,
-		); err !=  nil {
+		); err != nil {
 			return entity.User{}, err
 		}
 	}
 
 	return user, nil
+}
+
+func (u User) Update(ID uint64, user entity.User) error {
+	statment, err := u.db.Prepare(
+		"UPDATE users SET name = ?, username = ?, email = ? WHERE id = ?",
+	)
+	if err != nil {
+		return err
+	}
+	defer statment.Close()
+
+	if _, err = statment.Exec(user.Name, user.UserName, user.Email, ID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (u User) Delete(ID uint64) error {
+	statment, err := u.db.Prepare(
+		"DELETE FROM users WHERE id =?",
+	)
+	if err != nil {
+		return err
+	}
+	defer statment.Close()
+
+	if _, err = statment.Exec(ID); err != nil {
+		return err
+	}
+
+	return nil
 }

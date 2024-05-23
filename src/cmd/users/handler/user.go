@@ -27,7 +27,7 @@ func StoreUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = user.PrepareUser(); err != nil {
+	if err = user.PrepareUser("register"); err != nil {
 		responses.DomainError(w, http.StatusBadRequest, err)
 		return
 	}
@@ -99,9 +99,70 @@ func ShowUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Update user"))
+	params := mux.Vars(r)
+
+	userID, err := strconv.ParseUint(params["userID"], 10, 64)
+	if err != nil {
+		responses.DomainError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	requestBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		responses.DomainError(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	var user entity.User
+	if err = json.Unmarshal(requestBody, &user); err != nil {
+		responses.DomainError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if err = user.PrepareUser("update"); err != nil {
+		responses.DomainError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	db, err := config.Connect()
+	if err != nil {
+		responses.DomainError(w, http.StatusInternalServerError, err)
+		return
+	}
+	defer db.Close()
+
+	userRepo := repository.NewUserRepository(db)
+
+	if err = userRepo.Update(userID, user); err != nil {
+		responses.DomainError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	responses.DomainJSON(w, http.StatusNoContent, nil)
 }
 
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Delete user"))
+	params := mux.Vars(r)
+
+	userID, err := strconv.ParseUint(params["userID"], 10, 64)
+	if err != nil {
+		responses.DomainError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	db, err := config.Connect()
+	if err != nil {
+		responses.DomainError(w, http.StatusInternalServerError, err)
+		return
+	}
+	defer db.Close()
+
+	userRepo := repository.NewUserRepository(db)
+
+	if err = userRepo.Delete(userID); err != nil {
+		responses.DomainError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	responses.DomainJSON(w, http.StatusNoContent, nil)
 }
