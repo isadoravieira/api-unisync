@@ -12,8 +12,10 @@ func DomainJSON(w http.ResponseWriter, statusCode int, datas interface{}) {
 	
 	w.WriteHeader(statusCode)
 
-	if err := json.NewEncoder(w).Encode(datas); err != nil {
-		log.Fatal(err)
+	if datas !=  nil {
+		if err := json.NewEncoder(w).Encode(datas); err != nil {
+			log.Fatal(err)
+		}
 	}
 }
 
