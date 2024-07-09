@@ -9,5 +9,5 @@
 --     username varchar(50) not null unique,
 --     email varchar(50) not null unique,
 --     password varchar(50) not null unique,
---     createdAr timestamp default CURRENT_TIMESTAMP()
+--      timestamp default CURRENT_TIMESTAMP()
 -- )ENGINE=INNODB;
