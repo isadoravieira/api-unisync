@@ -7,7 +7,7 @@ import (
 	"github.com/isadoravieira/api-unisync/src/internal/domain/entity"
 )
 
-var usersRoutes = []entity.Route {
+var UsersRoutes = []entity.Route {
 	{
 		URI:    "/users",
 		Method: http.MethodPost,

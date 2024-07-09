@@ -7,7 +7,7 @@ func Hash(password string) ([]byte, error) {
 	return bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 }
 
-// checkPassword compares a password and a hash and checks if they are the same
-func checkPassword(passwordHash, passwordString string) error {
+// CheckPassword compares a password and a hash and checks if they are the same
+func CheckPassword(passwordHash, passwordString string) error {
 	return bcrypt.CompareHashAndPassword([]byte(passwordHash), []byte(passwordString))
 }

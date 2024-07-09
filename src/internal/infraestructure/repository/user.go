@@ -138,3 +138,21 @@ func (u User) Delete(ID uint64) error {
 
 	return nil
 }
+
+func (u User) QueryByEmail(email string) (entity.User, error) {
+	row, err := u.db.Query("SELECT id, password FROM users WHERE email =?", email)
+	if err != nil {
+		return entity.User{}, err
+	}
+	defer row.Close()
+
+	var user entity.User
+
+	if row.Next() {
+		if err = row.Scan(&user.ID, &user.Password); err != nil {
+			return entity.User{}, err
+		}
+	}
+
+	return entity.User{}, nil
+}
