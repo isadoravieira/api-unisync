@@ -50,7 +50,7 @@ func (u User) ListUsers(searchValue string) ([]entity.User, error) {
 	// searchValue = fmt.Sprintf("%%%s%%") // returns %searchValue%
 
 	rows, err := u.db.Query(
-		"SELECT id, name, username, email, createdAr FROM users WHERE name LIKE ? OR username LIKE ?",
+		"SELECT id, name, username, email, createdAt FROM users WHERE name LIKE ? OR username LIKE ?",
 		"%"+searchValue+"%", "%"+searchValue+"%",
 	)
 	if err != nil {
@@ -82,7 +82,7 @@ func (u User) ListUsers(searchValue string) ([]entity.User, error) {
 
 func (u User) QueryByID(ID uint64) (entity.User, error) {
 	rows, err := u.db.Query(
-		"SELECT id, name, username, email, createdAr FROM users WHERE id = ?",
+		"SELECT id, name, username, email, createdAt FROM users WHERE id = ?",
 		ID,
 	)
 	if err != nil {
